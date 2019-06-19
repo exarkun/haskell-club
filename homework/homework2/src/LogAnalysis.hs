@@ -32,12 +32,18 @@ parse s =
 
 parseMessage' :: Parsec.GenParser Char st [LogMessage]
 parseMessage' = do
-  result <- Parsec.many logMessage'
+  result <- Parsec.many (logMessage' <|> unknownMessage')
   Parsec.eof
   return result
 
 eol :: Parsec.GenParser Char st Char
 eol = Parsec.char '\n'
+
+unknownMessage' :: Parsec.GenParser Char st LogMessage
+unknownMessage' = do
+  result <- logMessageText'
+  eol
+  return $ Unknown result
 
 logMessage' :: Parsec.GenParser Char st LogMessage
 logMessage' = do

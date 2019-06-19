@@ -1,5 +1,9 @@
 module Main where
 
+import System.Environment
+  ( getArgs
+  )
+
 import Data.List
   ( foldl'
   )
@@ -21,7 +25,8 @@ import Log
 
 main :: IO ()
 main = do
-  msgs <- testParse parse 5000 "error.log"
+  argv <- getArgs
+  msgs <- testParse parse 5000 $ argv !! 0
   putStrLn $ printf "Read %d messages" (length msgs)
 
   showMessages msgs
