@@ -69,9 +69,7 @@ main = hspec $ do
           result = skips xs
           -- Annotate with position to make assertions easier
           enumerated = indexed result
-          check (index, element) =
-            case index of
-              0 -> element `shouldBe` xs
-              n -> element `shouldBe` (filter ((== n + 1) . mod (n + 1)) xs)
+          picker n = (==) (n + 1) . mod (n + 1)
+          expected = xs:[ filter (picker n) xs | n <- [1..length xs] ]
         in
-          map check enumerated
+          result `shouldBe` expected
