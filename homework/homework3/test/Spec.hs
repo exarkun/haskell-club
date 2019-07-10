@@ -62,14 +62,18 @@ main = hspec $ do
         in
           firsts `shouldBe` Just (x:xs)
 
-    it "returns a list where the nth is a list containing every nth element of the input" $ do
+    it "returns a list where the nth element is a list containing every nth element of the input" $ do
       property $ \xs ->
         let
-          -- Compute the function
-          result = skips xs
-          -- Annotate with position to make assertions easier
-          enumerated = indexed result
-          picker n = (==) (n + 1) . mod (n + 1)
-          expected = xs:[ filter (picker n) xs | n <- [1..length xs] ]
+          result = skips xs :: [[String]]
+          -- An element at position n is correct if all its elements at
+          -- position e correspond to elements in the input at a position e
+          -- times n.
+          expected = xs:[ [ xs !! ((outer * inner) - 1)
+                          | inner <- [1..length xs `div` outer]
+                          , outer * inner <= length xs
+                          ]
+                        | outer <- [2..length xs]
+                        ]
         in
           result `shouldBe` expected
