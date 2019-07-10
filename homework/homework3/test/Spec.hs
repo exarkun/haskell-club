@@ -54,6 +54,14 @@ main = hspec $ do
         in
           gotLength `shouldBe` expectedLength
 
+    it "returns a list of lists where the first element of all the lists combine to form the input" $ do
+      forAll (arbitrary :: Gen (Integer, [Integer])) $ \(x, xs) ->
+        let
+          result = skips (x:xs) :: [[Integer]]
+          firsts = sequence $ map listToMaybe result
+        in
+          firsts `shouldBe` Just (x:xs)
+
     it "returns a list where the nth is a list containing every nth element of the input" $ do
       property $ \xs ->
         let

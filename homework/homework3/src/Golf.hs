@@ -14,7 +14,7 @@ skips xs = xs:map (nth xs 0) [2..length xs]
 nth :: [a] -> Int -> Int -> [a]
 nth [] _ _ = []
 nth (x:xs) position every =
-  if position `mod` every == position then
+  if position `mod` every == (every - 1) then
     [x]
   else
     []
