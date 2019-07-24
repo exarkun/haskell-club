@@ -38,7 +38,12 @@ fun2 n
   | otherwise = fun2 (3 * n + 1)
 
 fun2' :: Integer -> Integer
-fun2' = undefined
+fun2' =
+  sum . takeWhile (>1) . iterate fun2''
+  where
+    fun2'' n
+      | even n    = n `div` 2
+      | otherwise = 3 * n + 1
 
 -- Note that each node stores an extra Integer representing the pre-computed
 -- height at that node.
