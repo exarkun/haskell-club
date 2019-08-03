@@ -97,7 +97,7 @@ main = hspec $ do
       property $ \xs ->
         (length . foldTree) (xs :: [Char]) `shouldBe` length xs
 
-    it "returns a tree with each node's height is greater than that of its children" $
+    it "returns a tree where each node's height is greater than that of its children" $
       property $ \xs ->
         let tree = foldTree (xs :: [Char])
         in heightInvariant tree `shouldBe` True
