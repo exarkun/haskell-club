@@ -91,14 +91,18 @@ main = hspec $ do
         myFoldl f x xs `shouldBe` foldl f x xs
 
   describe "sieveSundaram" $ do
+    let prime i = all ((/= 0) . (i `mod`)) [2..(i `div` 2)]
     it "returns a list of numbers less than or equal to 2n + 2" $ do
       property $ \n ->
         sieveSundaram n `shouldSatisfy` (all (<=2 * n + 2))
 
     it "returns a list of only prime numbers" $ do
-      let prime i = all ((/= 0) . (i `mod`)) [2..(i `div` 2)]
       property $ \n ->
         sieveSundaram n `shouldSatisfy` all prime
+
+    it "returns all the the odd prime numbers less than or equal to 2n + 2" $ do
+      property $ \n ->
+        sieveSundaram n `shouldBe` filter prime [3, 5..2 * n + 1]
 
   describe "foldTree" $ do
     it "returns a balanced tree" $
