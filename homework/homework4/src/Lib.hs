@@ -122,14 +122,13 @@ myFoldl f base = foldr (flip f) base . reverse
 sieveSundaram :: Integer -> [Integer]
 sieveSundaram n =
   let
-    drop x xs = filter (\c -> c /= x) xs
     starting = [1..n] :: [Integer]
-    sieved = foldr
-               drop
-               starting
-               [ i + j + i * j * 2
-               | j <- [1..n]
-               , i <- [1..j]
-               ]
+    composites = [ i + j + i * j * 2
+                 | j <- [1..n]
+                 , i <- [1..j]
+                 ]
+    elem' = flip elem
+    isComposite = elem' composites
+    sieved = filter (not . isComposite) starting
   in
     map ((+1) . (2*)) sieved
