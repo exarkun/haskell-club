@@ -12,6 +12,7 @@ module Lib
   , xor
   , map'
   , myFoldl
+  , sieveSundaram
   ) where
 
 import Data.Bool.Unicode
@@ -101,3 +102,34 @@ map' f = foldr (\a b -> (f a):b) []
 
 myFoldl :: (a -> b -> a) -> a -> [b] -> a
 myFoldl f base = foldr (flip f) base . reverse
+
+--
+-- Exercise 4
+--
+
+-- Given an integer n, your function should generate all the odd prime numbers
+-- up to 2n + 2.
+--
+-- Start with a list of the integers from 1 to n. From this list, remove all
+-- numbers of the form i + j + 2ij where:
+--
+--   i, j ∈ ℕ 1 ≤ i ≤ j
+--   i + j + 2ij ≤ n
+--
+--
+-- The remaining numbers are doubled and incremented by one, giving a list of
+-- the odd prime numbers (i.e., all primes except 2) below 2n + 2.
+sieveSundaram :: Integer -> [Integer]
+sieveSundaram n =
+  let
+    drop x xs = filter (\c -> c /= x) xs
+    starting = [1..n] :: [Integer]
+    sieved = foldr
+               drop
+               starting
+               [ i + j + i * j * 2
+               | j <- [1..n]
+               , i <- [1..j]
+               ]
+  in
+    map ((+1) . (2*)) sieved
