@@ -11,6 +11,7 @@ module Lib
 
   , xor
   , map'
+  , myFoldl
   ) where
 
 import Data.Bool.Unicode
@@ -97,3 +98,6 @@ xor = foldr (⊻) False
 
 map' :: (a -> b) -> [a] -> [b]
 map' f = foldr (\a b -> (f a):b) []
+
+myFoldl :: (a -> b -> a) -> a -> [b] -> a
+myFoldl f base = foldr (flip f) base . reverse

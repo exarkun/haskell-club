@@ -48,6 +48,7 @@ import Lib
 
   , xor
   , map'
+  , myFoldl
   )
 
 
@@ -79,6 +80,13 @@ main = hspec $ do
     it "behaves exactly like map" $ do
       property $ \xs ->
         (map' (*2) (xs :: [Integer])) `shouldBe` (map (*2) xs)
+
+  describe "myFoldl" $
+    it "behaves exactly like foldl" $
+    do
+      let f = (-) :: (Int -> Int -> Int)
+      property $ \xs x ->
+        myFoldl f x xs `shouldBe` foldl f x xs
 
   describe "foldTree" $ do
     it "returns a balanced tree" $
