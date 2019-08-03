@@ -19,6 +19,11 @@ import Data.Bool.Unicode
   ( (⊻) -- boolean xor
   )
 
+import Data.Set
+  ( fromList
+  , member
+  )
+
 --
 -- Exercise 1
 --
@@ -127,8 +132,8 @@ sieveSundaram n =
                  | j <- [1..n]
                  , i <- [1..j]
                  ]
-    elem' = flip elem
-    isComposite = elem' composites
+    member' = flip member
+    isComposite = member' $ fromList composites
     sieved = filter (not . isComposite) starting
   in
     map ((+1) . (2*)) sieved
