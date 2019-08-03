@@ -113,7 +113,7 @@ myFoldl f base = foldr (flip f) base . reverse
 -- Start with a list of the integers from 1 to n. From this list, remove all
 -- numbers of the form i + j + 2ij where:
 --
---   i, j ∈ ℕ 1 ≤ i ≤ j
+--   i, j ∈ ℕ, 1 ≤ i ≤ j
 --   i + j + 2ij ≤ n
 --
 --
