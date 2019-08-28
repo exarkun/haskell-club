@@ -8,6 +8,7 @@ module SpecExpr
   , prop_roundtrip'
   , spec_roundtrips
   , spec_assignmentExample'
+  , spec_boolExprT
   ) where
 
 import Calc
@@ -19,6 +20,11 @@ import Calc
 import ExprT
   ( ExprT(Lit, Add, Mul)
   )
+import qualified BoolExprT
+  ( T(Lit, Add, Mul)
+  , eval
+  )
+
 import Parser
   ( parseExp
   )
@@ -103,3 +109,31 @@ spec_assignmentExample' =
   describe "lit, add, and mul" $
   it "are equivalent to Lit, Add, Mul" $ do
   (mul (add (lit 2) (lit 3)) (lit 4) :: ExprT) `shouldBe` Mul (Add (Lit 2) (Lit 3)) (Lit 4)
+
+spec_boolExprT :: Spec
+spec_boolExprT = do
+  describe "lit" $ do
+    it "treats integers less than 0 as false" $
+      (lit (-1)) `shouldBe` BoolExprT.Lit False
+    it "treats 0 as false" $
+      (lit 0) `shouldBe` BoolExprT.Lit False
+    it "treats integers greater than zero as true" $
+      (lit 1) `shouldBe` BoolExprT.Lit True
+  describe "add" $ do
+    it "adding falses is false" $
+      BoolExprT.eval (add (lit 0) (lit 0)) `shouldBe` False
+    it "adding trues is true" $
+      BoolExprT.eval (add (lit 1) (lit 1)) `shouldBe` True
+    it "adding false and true is true" $
+      BoolExprT.eval (add (lit 0) (lit 1)) `shouldBe` True
+    it "adding true and false is true" $
+      BoolExprT.eval (add (lit 1) (lit 0)) `shouldBe` True
+  describe "mul" $ do
+    it "multiplying falses is false" $
+      BoolExprT.eval (mul (lit 0) (lit 0)) `shouldBe` False
+    it "multiplying trues is true" $
+      BoolExprT.eval (mul (lit 1) (lit 1)) `shouldBe` True
+    it "multiplying false and true is false" $
+      BoolExprT.eval (mul (lit 0) (lit 1)) `shouldBe` False
+    it "multiplying true and false is true" $
+      BoolExprT.eval (mul (lit 1) (lit 0)) `shouldBe` False
