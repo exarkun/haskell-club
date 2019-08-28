@@ -2,6 +2,7 @@ module Calc
   ( eval
   , evalStr
   , toInfixString
+  , Expr(lit, add, mul)
   ) where
 
 import ExprT
@@ -30,3 +31,13 @@ toInfixString :: ExprT -> String
 toInfixString (Lit n) = show n
 toInfixString (Add x y) = "(" ++ toInfixString x ++ " + " ++ toInfixString y ++ ")"
 toInfixString (Mul x y) = "(" ++ toInfixString x ++ " * " ++ toInfixString y ++ ")"
+
+class Expr e where
+  lit :: Integer -> e
+  add :: e -> e -> e
+  mul :: e -> e -> e
+
+instance Expr ExprT where
+  lit = Lit
+  add = Add
+  mul = Mul

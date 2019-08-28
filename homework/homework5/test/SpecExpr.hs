@@ -7,12 +7,14 @@ module SpecExpr
   , prop_roundtrip
   , prop_roundtrip'
   , spec_roundtrips
+  , spec_assignmentExample'
   ) where
 
 import Calc
   ( eval
   , evalStr
   , toInfixString
+  , Expr(lit, add, mul)
   )
 import ExprT
   ( ExprT(Lit, Add, Mul)
@@ -95,3 +97,9 @@ spec_roundtrips =
 
     it "parses ()" $
       roundtrip "((0 + 0) * 0)"
+
+spec_assignmentExample' :: Spec
+spec_assignmentExample' =
+  describe "lit, add, and mul" $
+  it "are equivalent to Lit, Add, Mul" $ do
+  (mul (add (lit 2) (lit 3)) (lit 4) :: ExprT) `shouldBe` Mul (Add (Lit 2) (Lit 3)) (Lit 4)
