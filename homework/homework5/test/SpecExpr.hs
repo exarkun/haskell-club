@@ -16,13 +16,13 @@ import Calc
   , evalStr
   , toInfixString
   , Expr(lit, add, mul)
+  , testExp
   )
 import ExprT
   ( ExprT(Lit, Add, Mul)
   )
-import qualified BoolExprT
-  ( T(Lit, Add, Mul)
-  , eval
+import BoolExprT
+  ( -- Get the Expr Bool instance
   )
 
 import Parser
@@ -114,26 +114,42 @@ spec_boolExprT :: Spec
 spec_boolExprT = do
   describe "lit" $ do
     it "treats integers less than 0 as false" $
-      (lit (-1)) `shouldBe` BoolExprT.Lit False
+      testExp (lit (-1)) `shouldBe` False
     it "treats 0 as false" $
-      (lit 0) `shouldBe` BoolExprT.Lit False
+      testExp (lit 0) `shouldBe` False
     it "treats integers greater than zero as true" $
-      (lit 1) `shouldBe` BoolExprT.Lit True
+      testExp (lit 1) `shouldBe` True
   describe "add" $ do
     it "adding falses is false" $
-      BoolExprT.eval (add (lit 0) (lit 0)) `shouldBe` False
+      testExp (add (lit 0) (lit 0)) `shouldBe` False
     it "adding trues is true" $
-      BoolExprT.eval (add (lit 1) (lit 1)) `shouldBe` True
+      testExp (add (lit 1) (lit 1)) `shouldBe` True
     it "adding false and true is true" $
-      BoolExprT.eval (add (lit 0) (lit 1)) `shouldBe` True
+      testExp (add (lit 0) (lit 1)) `shouldBe` True
     it "adding true and false is true" $
-      BoolExprT.eval (add (lit 1) (lit 0)) `shouldBe` True
+      testExp (add (lit 1) (lit 0)) `shouldBe` True
   describe "mul" $ do
     it "multiplying falses is false" $
-      BoolExprT.eval (mul (lit 0) (lit 0)) `shouldBe` False
+      testExp (mul (lit 0) (lit 0)) `shouldBe` False
     it "multiplying trues is true" $
-      BoolExprT.eval (mul (lit 1) (lit 1)) `shouldBe` True
+      testExp (mul (lit 1) (lit 1)) `shouldBe` True
     it "multiplying false and true is false" $
-      BoolExprT.eval (mul (lit 0) (lit 1)) `shouldBe` False
+      testExp (mul (lit 0) (lit 1)) `shouldBe` False
     it "multiplying true and false is true" $
-      BoolExprT.eval (mul (lit 1) (lit 0)) `shouldBe` False
+      testExp (mul (lit 1) (lit 0)) `shouldBe` False
+
+spec_parametricPolymorphism :: Spec
+spec_parametricPolymorphism =
+  let
+    testExp :: Expr a => Maybe a
+    testExp = parseExp lit add mul "(3 * -4) + 5"
+  in do
+    describe "Expr" $ do
+      it "has Integer instance" $
+        (testExp :: Maybe Integer) `shouldBe` Just -7
+      it "has Bool instance" $
+        (testExp :: Maybe Bool) `shouldBe` Just True
+      it "has MinMax instance" $
+        (testExp :: Maybe MinMax) `shouldBe` Just 5
+      it "has Mod7 instance" $
+        (testExp :: Maybe Mod7) `shouldBe` Just 0
