@@ -3,7 +3,8 @@ module Calc
   , evalStr
   , toInfixString
   , Expr(lit, add, mul)
-  , testExp
+  , MinMax(MinMax)
+  , Mod7(Mod7)
   ) where
 
 import ExprT
@@ -49,18 +50,17 @@ instance Expr Integer where
   mul = (*)
 
 newtype MinMax = MinMax Integer
+  deriving (Eq, Show)
 
 instance Expr MinMax where
   lit = MinMax
-  add (MinMax x) (MinMax y) = min x y
-  mul (MinMax x) (MinMax y) = max x y
+  add (MinMax x) (MinMax y) = MinMax $ min x y
+  mul (MinMax x) (MinMax y) = MinMax $ max x y
 
 newtype Mod7 = Mod7 Integer
+  deriving (Eq, Show)
 
 instance Expr Mod7 where
-  lit x = x `mod` 7
-  add x y = (x + y) `mod` 7
-  mul x y = (x * y) `mod` 7
-
-testExp :: Expr a => Maybe a
-testExp = parseExp lit add mul "(3 * -4) + 5"
+  lit x = Mod7 $ x `mod` 7
+  add (Mod7 x) (Mod7 y) = Mod7 $ (x + y) `mod` 7
+  mul (Mod7 x) (Mod7 y) = Mod7 $ (x * y) `mod` 7

@@ -9,6 +9,7 @@ module SpecExpr
   , spec_roundtrips
   , spec_assignmentExample'
   , spec_boolExprT
+  , spec_parametricPolymorphism
   ) where
 
 import Calc
@@ -16,7 +17,8 @@ import Calc
   , evalStr
   , toInfixString
   , Expr(lit, add, mul)
-  , testExp
+  , MinMax(MinMax)
+  , Mod7(Mod7)
   )
 import ExprT
   ( ExprT(Lit, Add, Mul)
@@ -114,29 +116,29 @@ spec_boolExprT :: Spec
 spec_boolExprT = do
   describe "lit" $ do
     it "treats integers less than 0 as false" $
-      testExp (lit (-1)) `shouldBe` False
+      (lit (-1)) `shouldBe` False
     it "treats 0 as false" $
-      testExp (lit 0) `shouldBe` False
+      (lit 0) `shouldBe` False
     it "treats integers greater than zero as true" $
-      testExp (lit 1) `shouldBe` True
+      (lit 1) `shouldBe` True
   describe "add" $ do
     it "adding falses is false" $
-      testExp (add (lit 0) (lit 0)) `shouldBe` False
+      (add (lit 0) (lit 0)) `shouldBe` False
     it "adding trues is true" $
-      testExp (add (lit 1) (lit 1)) `shouldBe` True
+      (add (lit 1) (lit 1)) `shouldBe` True
     it "adding false and true is true" $
-      testExp (add (lit 0) (lit 1)) `shouldBe` True
+      (add (lit 0) (lit 1)) `shouldBe` True
     it "adding true and false is true" $
-      testExp (add (lit 1) (lit 0)) `shouldBe` True
+      (add (lit 1) (lit 0)) `shouldBe` True
   describe "mul" $ do
     it "multiplying falses is false" $
-      testExp (mul (lit 0) (lit 0)) `shouldBe` False
+      (mul (lit 0) (lit 0)) `shouldBe` False
     it "multiplying trues is true" $
-      testExp (mul (lit 1) (lit 1)) `shouldBe` True
+      (mul (lit 1) (lit 1)) `shouldBe` True
     it "multiplying false and true is false" $
-      testExp (mul (lit 0) (lit 1)) `shouldBe` False
+      (mul (lit 0) (lit 1)) `shouldBe` False
     it "multiplying true and false is true" $
-      testExp (mul (lit 1) (lit 0)) `shouldBe` False
+      (mul (lit 1) (lit 0)) `shouldBe` False
 
 spec_parametricPolymorphism :: Spec
 spec_parametricPolymorphism =
@@ -146,10 +148,10 @@ spec_parametricPolymorphism =
   in do
     describe "Expr" $ do
       it "has Integer instance" $
-        (testExp :: Maybe Integer) `shouldBe` Just -7
+        (testExp :: Maybe Integer) `shouldBe` Just (-7)
       it "has Bool instance" $
         (testExp :: Maybe Bool) `shouldBe` Just True
       it "has MinMax instance" $
-        (testExp :: Maybe MinMax) `shouldBe` Just 5
+        (testExp :: Maybe MinMax) `shouldBe` Just (MinMax 3)
       it "has Mod7 instance" $
-        (testExp :: Maybe Mod7) `shouldBe` Just 0
+        (testExp :: Maybe Mod7) `shouldBe` Just (Mod7 0)
