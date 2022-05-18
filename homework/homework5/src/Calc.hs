@@ -1,5 +1,9 @@
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+
 module Calc
   ( eval
+  , compile
   , evalStr
   , toInfixString
   , Expr(lit, add, mul)
@@ -10,6 +14,8 @@ module Calc
 import ExprT
   ( ExprT(Lit, Add, Mul)
   )
+
+import qualified StackVM
 
 import Parser
   ( parseExp
@@ -34,6 +40,12 @@ toInfixString (Lit n) = show n
 toInfixString (Add x y) = "(" ++ toInfixString x ++ " + " ++ toInfixString y ++ ")"
 toInfixString (Mul x y) = "(" ++ toInfixString x ++ " * " ++ toInfixString y ++ ")"
 
+-- Exercise 3
+-- Create a type class called Expr with three methods called lit, add,
+-- and mul which parallel the constructors of ExprT. Make an instance of
+-- Expr for the ExprT type, in such a way that
+-- mul (add (lit 2) (lit 3)) (lit 4) :: ExprT
+-- == Mul (Add (Lit 2) (Lit 3)) (Lit 4)
 class Expr e where
   lit :: Integer -> e
   add :: e -> e -> e
@@ -44,6 +56,9 @@ instance Expr ExprT where
   add = Add
   mul = Mul
 
+-- Exercise 4
+-- Make instances of Expr for each of the following types:
+-- ...
 instance Expr Integer where
   lit = id
   add = (+)
@@ -64,3 +79,15 @@ instance Expr Mod7 where
   lit x = Mod7 $ x `mod` 7
   add (Mod7 x) (Mod7 y) = Mod7 $ (x + y) `mod` 7
   mul (Mod7 x) (Mod7 y) = Mod7 $ (x * y) `mod` 7
+
+-- Exercise 5
+-- For any arithmetic expression exp :: Expr a => a it should be the case that
+-- stackVM exp == Right [IVal exp]
+
+instance Expr StackVM.Program where
+  lit n = [StackVM.PushI n]
+  add a b = (a ++ b) ++ [StackVM.Add]
+  mul a b = (a ++ b) ++ [StackVM.Mul]
+
+compile :: String -> Maybe StackVM.Program
+compile = parseExp lit add mul
