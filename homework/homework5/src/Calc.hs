@@ -6,14 +6,19 @@ module Calc
   , compile
   , evalStr
   , toInfixString
+  , withVars
   , Expr(lit, add, mul)
   , MinMax(MinMax)
   , Mod7(Mod7)
   ) where
 
+import qualified Data.Map as M
+
 import ExprT
   ( ExprT(Lit, Add, Mul)
   )
+
+import qualified VarExprT
 
 import qualified StackVM
 
@@ -91,3 +96,21 @@ instance Expr StackVM.Program where
 
 compile :: String -> Maybe StackVM.Program
 compile = parseExp lit add mul
+
+-- Exercise 6 - representation and evaluation of expressions with variables
+
+withVars :: [(String, Integer)]
+         -> (M.Map String Integer -> Maybe Integer)
+         -> Maybe Integer
+withVars vs exp = exp $ M.fromList vs
+
+
+instance Expr VarExprT.VarExprT where
+  lit = VarExprT.Lit
+  add = VarExprT.Add
+  mul = VarExprT.Mul
+
+instance Expr (M.Map String Integer -> Maybe Integer) where
+  lit n = \vars -> Just n
+  add left right = \vars -> (+) <$> (left vars) <*> (right vars)
+  mul left right = \vars -> (*) <$> (left vars) <*> (right vars)
