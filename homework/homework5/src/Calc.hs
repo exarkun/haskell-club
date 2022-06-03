@@ -26,6 +26,8 @@ import Parser
   ( parseExp
   )
 
+import qualified StackVM
+
 -- Exercise 1
 -- For example, eval (Mul (Add (Lit 2) (Lit 3)) (Lit 4)) == 20.
 eval :: ExprT -> Integer
@@ -114,3 +116,11 @@ instance Expr (M.Map String Integer -> Maybe Integer) where
   lit n = \vars -> Just n
   add left right = \vars -> (+) <$> (left vars) <*> (right vars)
   mul left right = \vars -> (*) <$> (left vars) <*> (right vars)
+
+instance Expr StackVM.Stack where
+  lit x = StackVM.PushI x
+  add = StackVM.Add
+  mul = StackVM
+
+compile :: String -> Maybe Program
+compile expr = parseExp Lit Add Mul expr
