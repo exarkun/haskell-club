@@ -36,9 +36,14 @@ treeFold f (Node rootLabel xs) = f rootLabel (map (treeFold f) xs)
 nextLevel :: Employee -> [(GuestList, GuestList)] -> (GuestList, GuestList)
 nextLevel boss [] = (mempty, glCons boss mempty)
 nextLevel boss subdivisions =
-  (glCons boss withBoss, withoutBoss)
+  -- Add my to the subdivision result that assumes I am coming and pass
+  -- through the other one without adding me to it.
+  (glCons boss withMe, withoutMe)
   where
-    (withBoss, withoutBoss) = mconcat subdivisions
+    -- Tally all subdivisions.  The first element is the maximum amount of fun
+    -- across all my subdivisions if I attend.  The second element is the
+    -- maximum amount of fun if I don't attend.
+    (withMe, withoutMe) = mconcat subdivisions
 
 -- exercise 4
 
